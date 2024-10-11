@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.AdminMapper">
+<select id="getDae" resultType="com.example.demo.dto.DaeDto">
+	select * from dae
+	order by code asc
+
+</select>
+<select id="getCompany" resultType="com.example.demo.dto.CompanyDto">
+	select * from company
+	order by code asc
+</select>
+<select id="getJung" resultType="com.example.demo.dto.JungDto">
+	select * from jung 
+	where daecode=#{daecode}
+	order by code asc
+</select>
+<select id="getSo" resultType="com.example.demo.dto.SoDto">
+	select * from so 
+	where daejung=#{daejung}
+	order by code asc
+</select>
+<select id="genPcode" resultType="Integer">
+	select ifnull(max ( right (pcode,3)),0) +1
+	from product
+	where pcode like concat(#{pcode},'%')
+</select>
+<insert id="productAddOk" parameterType="com.example.demo.dto.ProductDto">
+	insert into product(pcode,pimg,dimg,title,price,halin,su,baeprice,baeday,juk,writeday)
+	values(#{pcode},#{pimg},#{dimg},#{title},#{price},#{halin},#{su},#{baeprice},#{baeday},#{juk},now())
+</insert>
+  <select id="gumaeAll" resultType="HashMap">
+    select g.userid, g.state,g.id, p.title, p.pimg, b.zip
+    from gumae as g inner join product as p on g.pcode=p.pcode
+    inner join baesong as b on g.baeId=b.id
+    order by g.id desc;
+  </select>
+  <update id="chgState">
+    update gumae set state=#{state}
+    where id=#{id}
+  </update>
+  <select id="qnaList" resultType="com.example.demo.dto.ProQnaDto">
+  	 select p1.*,p2.title from proQna as p1 inner join product as p2
+  	 on p1.pcode=p2.pcode
+  	 order by ref desc,qna asc
+  </select>
+  <insert id="writeAnswerOk" parameterType="com.example.demo.dto.ProQnaDto">
+  	insert into proQna(userid,pcode,content,writeday,qna,ref)
+  	values(#{userid},#{pcode},#{content},now(),1,#{ref})
+  </insert>
+</mapper>
